@@ -2,6 +2,14 @@ import random
 import customtkinter as ctk
 import pyperclip, string
 
+""" 
+## 👉 To-Do List
+- Light- Dark Theme options.
+- Implement a password strength indicator.
+- Save password history.
+"""
+
+
 copied = None
 
 def copy():
