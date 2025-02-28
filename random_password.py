@@ -4,7 +4,7 @@ import pyperclip, string
 
 """ 
 ## 👉 To-Do List
-- Light- Dark Theme options.
+- Light- Dark Theme options.    ------------> DONE
 - Implement a password strength indicator.
 - Save password history.
 """
@@ -77,6 +77,32 @@ def generate():
 def update_slider(value):
     slider_label.configure(text=f"Length of Password: {int(value)}")
 
+def switch_theme():
+    if switch_var.get() == "Dark":
+        ctk.set_appearance_mode("dark")
+    else:
+        ctk.set_appearance_mode("light")
+
+def check_password_strength(strength = 0, ):
+    if len(password_entry) < 12:
+        strength += 0
+    else:
+        strength +=1
+
+    if any(char.isupper() for char in password_entry) and any(char.islower() for char in password_entry):
+        strength += 1
+    if any(char.isdigit() for char in password_entry):
+        strength += 1
+    if any(char in string.punctuation for char in password_entry):
+        strength += 1
+
+    if strength <= 2:
+        return "Weak"
+    elif strength <= 3:
+        return "Medium"
+    else:
+        return "Strong"
+
 
 # system
 ctk.set_appearance_mode("System")
@@ -98,6 +124,13 @@ result_frame.pack(pady=10)
 password_entry = ctk.CTkEntry(result_frame, width=250, font=("Arial", 14), placeholder_text="Generated Password",
                               state="normal", text_color="white", corner_radius=15)
 password_entry.pack(side=ctk.LEFT, padx = 5)
+
+# switch theme
+switch_var = ctk.StringVar(value = "Dark Mode")
+switch = ctk.CTkSwitch(app, text = "Dark Mode", command = switch_theme, variable = switch_var,
+                       corner_radius=15, onvalue = "Dark", offvalue = "Light")
+switch.select() # switch on
+switch.place(x = 670, y = 24 )
 
 # copy button
 copy_button = ctk.CTkButton(result_frame, text="Copy", corner_radius=15, width=80, command=copy)
