@@ -5,7 +5,7 @@ import pyperclip, string
 """ 
 ## 👉 To-Do List
 - Light- Dark Theme options.    ------------> DONE
-- Implement a password strength indicator.
+- Implement a password strength indicator.  ------------> DONE
 - Save password history.
 """
 
@@ -44,7 +44,6 @@ def generate():
         copied.destroy()
         copied = None
 
-
     digits = string.digits
     lowercase = string.ascii_lowercase
     uppercase = string.ascii_uppercase
@@ -71,6 +70,7 @@ def generate():
         password_entry.delete(0, ctk.END)
         password_entry.insert(0, password)
 
+        check_password_strength()   # Added here to check strength after generating the password
     else:
         error()
 
@@ -80,28 +80,43 @@ def update_slider(value):
 def switch_theme():
     if switch_var.get() == "Dark":
         ctk.set_appearance_mode("dark")
+        password_entry.configure(text_color="white")
     else:
         ctk.set_appearance_mode("light")
+        password_entry.configure(text_color="black")
 
-def check_password_strength(strength = 0, ):
-    if len(password_entry) < 12:
+def check_password_strength():
+    strength = 0
+    value = None
+
+    password = password_entry.get()
+
+    if len(password) < 12:
         strength += 0
+    elif len(password) < 16:
+        strength += 1
     else:
-        strength +=1
+        strength += 2
 
-    if any(char.isupper() for char in password_entry) and any(char.islower() for char in password_entry):
+    if any(char.isupper() for char in password):
         strength += 1
-    if any(char.isdigit() for char in password_entry):
+    if any(char.islower() for char in password):
         strength += 1
-    if any(char in string.punctuation for char in password_entry):
+    if any(char.isdigit() for char in password):
+        strength += 1
+    if any(char in string.punctuation for char in password):
         strength += 1
 
     if strength <= 2:
-        return "Weak"
-    elif strength <= 3:
-        return "Medium"
+        value =  "Weak"
+        strength_label.configure(text=value, text_color = "red")
+    elif strength <= 4:
+        value =  "Medium"
+        strength_label.configure(text=value, text_color = "yellow")
     else:
-        return "Strong"
+        value =  "Strong"
+        strength_label.configure(text=value, text_color = "green")
+
 
 
 # system
@@ -136,11 +151,18 @@ switch.place(x = 670, y = 24 )
 copy_button = ctk.CTkButton(result_frame, text="Copy", corner_radius=15, width=80, command=copy)
 copy_button.pack(side=ctk.LEFT, padx = 5)
 
+# password strength label
+strength_label = ctk.CTkLabel(app, text="", font=("Arial", 16))
+strength_label.pack(pady=10)
+
+# bind password entry to check password strength
+password_entry.bind("<KeyRelease>", check_password_strength)
+
 # length of password
 slider_frame = ctk.CTkFrame(app)
 slider_frame.pack(pady=20)
 
-default_char = 16
+default_char = 14
 slider_label = ctk.CTkLabel(slider_frame, text = f"Length of Password: {default_char}")
 slider_label.pack()
 
